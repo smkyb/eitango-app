@@ -15,6 +15,17 @@
   --transition-speed: 0.2s;
 }
 
+[data-theme='dark'] {
+  --bg-color: #111827;
+  --surface-color: #1f2937;
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
+  --accent-color: #6366f1; /* 目に優しいインディゴブルー */
+  --accent-hover: #4f46e5;
+  --border-color: #374151;
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -30,6 +41,7 @@ body {
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 #root {
@@ -295,6 +307,7 @@ button {
   background: var(--surface-color);
   border: 1px solid var(--border-color);
   box-shadow: var(--card-shadow);
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
 }
 
 .flashcard-back {

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Menu from './components/Menu';
+import Settings from './components/Settings';
 import History from './components/History';
 import DataImporter from './components/DataImporter';
 import Flashcard from './components/Flashcard';
 import Controls from './components/Controls';
-import { getWords, incrementKnownCount, incrementDontKnowCount, clearWords, addHistory } from './utils/storageUtils';
+import { getWords, incrementKnownCount, incrementDontKnowCount, clearWords, addHistory, recordDailyActivity, calculateStreak, getTheme, setTheme } from './utils/storageUtils';
 import { selectSessionWords } from './utils/wordSelector';
 import { ChevronLeft, Clock, CheckCircle2 } from 'lucide-react';
 
@@ -15,8 +16,9 @@ function App() {
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
   const [cardKey, setCardKey] = useState(0);
   
-  // 画面状態: 'MENU', 'STUDY', 'IMPORT', 'HISTORY'
+  // 画面状態: 'MENU', 'STUDY', 'IMPORT', 'HISTORY', 'SETTINGS'
   const [currentScreen, setCurrentScreen] = useState('MENU');
+  const [previousScreen, setPreviousScreen] = useState('MENU');
 
   // セッション管理用ステート
   const [currentSessionQueue, setCurrentSessionQueue] = useState([]);
@@ -25,10 +27,34 @@ function App() {
   const [isSessionComplete, setIsSessionComplete] = useState(false);
   const [sessionTotalWords, setSessionTotalWords] = useState(0);
 
+  // テーマとストリークの管理
+  const [theme, setAppTheme] = useState('light');
+  const [streak, setStreak] = useState(0);
+
   useEffect(() => {
     const loadedWords = getWords();
     setWords(loadedWords);
+    
+    // テーマの初期ロードと適用
+    const savedTheme = getTheme();
+    setAppTheme(savedTheme);
+    setTheme(savedTheme);
+
+    // ストリークの初期計算
+    setStreak(calculateStreak());
   }, []);
+
+  // 画面遷移時にストリークを再計算（特に学習完了から戻った際などに反映）
+  useEffect(() => {
+    if (currentScreen === 'MENU') {
+      setStreak(calculateStreak());
+    }
+  }, [currentScreen]);
+
+  const handleToggleTheme = (newTheme) => {
+    setAppTheme(newTheme);
+    setTheme(newTheme);
+  };
 
   const processNextTurn = (isKnow, updatedWordsList) => {
     setIsAnimatingOut(true);
@@ -76,6 +102,7 @@ function App() {
     // 1周目のみグローバル状態と履歴を更新
     if (currentRound === 1) {
       addHistory(currentWord, 'KNOW');
+      recordDailyActivity('KNOW');
       updatedWords = incrementKnownCount(currentWord.id);
     }
     processNextTurn(true, updatedWords);
@@ -87,6 +114,7 @@ function App() {
     // 1周目のみグローバル状態と履歴を更新
     if (currentRound === 1) {
       addHistory(currentWord, 'DONT_KNOW');
+      recordDailyActivity('DONT_KNOW');
       updatedWords = incrementDontKnowCount(currentWord.id);
     }
     processNextTurn(false, updatedWords);
@@ -94,7 +122,7 @@ function App() {
 
   const handleDataLoaded = (loadedWords) => {
     setWords(loadedWords);
-    setCurrentScreen('MENU');
+    setCurrentScreen(previousScreen);
   };
 
   const handleClearData = () => {
@@ -129,9 +157,26 @@ function App() {
         {currentScreen === 'MENU' && (
           <Menu 
             wordCount={words.length}
+            streak={streak}
             onStart={startStudy}
-            onImport={() => setCurrentScreen('IMPORT')}
-            onHistory={() => setCurrentScreen('HISTORY')}
+            onSettings={() => setCurrentScreen('SETTINGS')}
+          />
+        )}
+
+        {currentScreen === 'SETTINGS' && (
+          <Settings 
+            wordCount={words.length}
+            currentTheme={theme}
+            onToggleTheme={handleToggleTheme}
+            onBack={() => setCurrentScreen('MENU')}
+            onImport={() => {
+              setPreviousScreen('SETTINGS');
+              setCurrentScreen('IMPORT');
+            }}
+            onHistory={() => {
+              setPreviousScreen('SETTINGS');
+              setCurrentScreen('HISTORY');
+            }}
             onClear={handleClearData}
           />
         )}
@@ -139,14 +184,14 @@ function App() {
         {currentScreen === 'HISTORY' && (
           <History onBack={() => {
             setWords(getWords());
-            setCurrentScreen('MENU');
+            setCurrentScreen(previousScreen);
           }} />
         )}
 
         {currentScreen === 'IMPORT' && (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <div style={{ marginBottom: '1rem' }}>
-              <button className="btn-icon" onClick={() => setCurrentScreen('MENU')}>
+              <button className="btn-icon" onClick={() => setCurrentScreen(previousScreen)}>
                 <ChevronLeft size={24} /> 戻る
               </button>
             </div>
@@ -167,7 +212,10 @@ function App() {
                 </div>
               )}
 
-              <button className="btn-icon" onClick={() => setCurrentScreen('HISTORY')} title="履歴（修正）">
+              <button className="btn-icon" onClick={() => {
+                setPreviousScreen('STUDY');
+                setCurrentScreen('HISTORY');
+              }} title="履歴（修正）">
                 <Clock size={24} />
               </button>
             </div>
