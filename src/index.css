@@ -200,15 +200,18 @@ button {
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
+  align-items: center;
   position: relative;
+  width: 100%;
 }
 
 .study-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
+  width: 100%;
 }
 
 .progress-indicator {
@@ -217,13 +220,13 @@ button {
 }
 
 .card-wrapper {
-  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   perspective: 1000px;
-  margin-bottom: 2rem;
-  min-height: 350px;
+  margin-bottom: 1.5rem;
+  width: 100%;
+  max-width: 400px;
 }
 
 /* Animations */
@@ -261,7 +264,6 @@ button {
 .flashcard-container {
   width: 100%;
   aspect-ratio: 1 / 1;
-  max-width: 350px; /* スマホ画面で大きすぎないように制限 */
   margin: 0 auto;
   cursor: pointer;
   perspective: 1000px;
@@ -334,6 +336,7 @@ button {
   display: flex;
   gap: 1rem;
   width: 100%;
+  max-width: 400px;
 }
 
 .control-btn {
