@@ -1,0 +1,27 @@
+[
+  {
+    "id": 1,
+    "word": "apple",
+    "sentence": "I ate an apple for breakfast."
+  },
+  {
+    "id": 2,
+    "word": "book",
+    "sentence": "She is reading a book in the library."
+  },
+  {
+    "id": 3,
+    "word": "computer",
+    "sentence": "My computer is very fast."
+  },
+  {
+    "id": 4,
+    "word": "dog",
+    "sentence": "The dog is barking loudly."
+  },
+  {
+    "id": 5,
+    "word": "water",
+    "sentence": "Can I have a glass of water, please?"
+  }
+]
