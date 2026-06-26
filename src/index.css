@@ -13,6 +13,10 @@
   --border-color: #e5e7eb;
   --border-radius: 12px;
   --transition-speed: 0.2s;
+  --hover-bg: #f3f4f6;
+  --danger-hover-bg: #fef2f2;
+  --know-active-bg: #ecfdf5;
+  --dontknow-active-bg: #fef2f2;
 }
 
 [data-theme='dark'] {
@@ -24,6 +28,10 @@
   --accent-hover: #4f46e5;
   --border-color: #374151;
   --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+  --hover-bg: #374151;
+  --danger-hover-bg: rgba(239, 68, 68, 0.15);
+  --know-active-bg: rgba(16, 185, 129, 0.15);
+  --dontknow-active-bg: rgba(239, 68, 68, 0.15);
 }
 
 * {
@@ -132,7 +140,7 @@ button {
 }
 
 .btn-outline:hover {
-  background-color: #f3f4f6;
+  background-color: var(--hover-bg);
 }
 
 .btn-danger-outline {
@@ -147,7 +155,7 @@ button {
 }
 
 .btn-danger-outline:hover {
-  background-color: #fef2f2;
+  background-color: var(--danger-hover-bg);
 }
 
 .btn-icon {
@@ -442,13 +450,13 @@ button {
 }
 
 .know-active {
-  background-color: #ecfdf5;
+  background-color: var(--know-active-bg);
   color: var(--success-color);
   border-color: var(--success-color);
 }
 
 .dontknow-active {
-  background-color: #fef2f2;
+  background-color: var(--dontknow-active-bg);
   color: var(--danger-color);
   border-color: #fca5a5;
 }

@@ -26,6 +26,7 @@ function App() {
     const [currentRound, setCurrentRound] = useState(1);
     const [isSessionComplete, setIsSessionComplete] = useState(false);
     const [sessionTotalWords, setSessionTotalWords] = useState(0);
+    const [activeSessionWords, setActiveSessionWords] = useState([]);
 
     // テーマとストリークの管理
     const [theme, setAppTheme] = useState('light');
@@ -133,9 +134,27 @@ function App() {
         }
     };
 
+    const handleHistoryUpdate = (wordId, newAction) => {
+        const isWordInSession = activeSessionWords.some(w => w.id === wordId);
+        if (!isWordInSession) return;
+
+        setNextSessionQueue(prev => {
+            if (newAction === 'DONT_KNOW') {
+                if (!prev.some(w => w.id === wordId)) {
+                    const wordObj = activeSessionWords.find(w => w.id === wordId);
+                    return [...prev, wordObj];
+                }
+            } else if (newAction === 'KNOW') {
+                return prev.filter(w => w.id !== wordId);
+            }
+            return prev;
+        });
+    };
+
     const startStudy = () => {
         if (words.length > 0) {
             const sessionWords = selectSessionWords(words, 10);
+            setActiveSessionWords(sessionWords);
             setCurrentSessionQueue(sessionWords);
             setNextSessionQueue([]);
             setCurrentRound(1);
@@ -183,10 +202,13 @@ function App() {
                 )}
 
                 {currentScreen === 'HISTORY' && (
-                    <History onBack={() => {
-                        setWords(getWords());
-                        setCurrentScreen(previousScreen);
-                    }} />
+                    <History 
+                        onBack={() => {
+                            setWords(getWords());
+                            setCurrentScreen(previousScreen);
+                        }} 
+                        onHistoryUpdate={handleHistoryUpdate}
+                    />
                 )}
 
                 {currentScreen === 'IMPORT' && (

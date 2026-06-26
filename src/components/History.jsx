@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getHistory, updateHistoryAction } from '../utils/storageUtils';
 import { ChevronLeft, CheckCircle2, XCircle } from 'lucide-react';
 
-const History = ({ onBack }) => {
+const History = ({ onBack, onHistoryUpdate }) => {
   const [history, setHistory] = useState([]);
 
   useEffect(() => {
@@ -13,6 +13,13 @@ const History = ({ onBack }) => {
     const newAction = currentAction === 'KNOW' ? 'DONT_KNOW' : 'KNOW';
     updateHistoryAction(id, newAction);
     setHistory(getHistory());
+
+    if (onHistoryUpdate) {
+      const record = history.find(h => h.id === id);
+      if (record) {
+        onHistoryUpdate(record.wordId, newAction);
+      }
+    }
   };
 
   return (
