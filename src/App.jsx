@@ -142,6 +142,7 @@ function App() {
       setIsSessionComplete(false);
       setSessionTotalWords(sessionWords.length);
       setCurrentWord(sessionWords[0]);
+      setIsFlipped(false);
       setCardKey(prev => prev + 1);
       setCurrentScreen('STUDY');
     }
