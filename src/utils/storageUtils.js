@@ -278,3 +278,27 @@ export const setTheme = (theme) => {
   localStorage.setItem(THEME_KEY, theme);
   document.documentElement.setAttribute('data-theme', theme);
 };
+
+// --- Distribution Data ---
+export const getKnownCountDistribution = () => {
+  const words = getWords();
+  const distribution = {};
+  
+  words.forEach(w => {
+    const count = w.knownCount || 0;
+    distribution[count] = (distribution[count] || 0) + 1;
+  });
+
+  const maxCount = Math.max(...Object.keys(distribution).map(Number), 0);
+  const data = [];
+  
+  for (let i = 0; i <= Math.min(maxCount, 10); i++) {
+    if (i === 10) {
+      const over10 = Object.entries(distribution).reduce((sum, [key, val]) => Number(key) >= 10 ? sum + val : sum, 0);
+      data.push({ count: '10+', words: over10 });
+    } else {
+      data.push({ count: `${i}回`, words: distribution[i] || 0 });
+    }
+  }
+  return data;
+};

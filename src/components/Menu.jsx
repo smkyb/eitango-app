@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { BookOpen, Settings } from 'lucide-react';
-import { getChartData } from '../utils/storageUtils';
+import { getChartData, getKnownCountDistribution } from '../utils/storageUtils';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
 const Menu = ({ wordCount, streak, onStart, onSettings }) => {
   const [chartData, setChartData] = useState([]);
   const [todayLearned, setTodayLearned] = useState(0);
+  const [distributionData, setDistributionData] = useState([]);
 
   useEffect(() => {
     const data = getChartData();
     setChartData(data);
     const today = data[data.length - 1];
     setTodayLearned(today ? today.learned : 0);
+    setDistributionData(getKnownCountDistribution());
   }, []);
 
   return (
@@ -32,8 +34,8 @@ const Menu = ({ wordCount, streak, onStart, onSettings }) => {
 
       {/* 2. 本日の学習数とストリーク（横並び）およびグラフ */}
       {wordCount > 0 && (
-        <div>
-          <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ display: 'flex', gap: '1rem' }}>
             <div style={{ flex: 1, background: 'var(--surface-color)', padding: '1.2rem 1rem', borderRadius: 'var(--border-radius)', border: '1px solid var(--border-color)', textAlign: 'center', transition: 'background-color 0.3s, border-color 0.3s' }}>
               <h3 style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.25rem', fontWeight: '500' }}>本日学習した単語数</h3>
               <div style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--text-primary)' }}>{todayLearned}</div>
@@ -67,6 +69,24 @@ const Menu = ({ wordCount, streak, onStart, onSettings }) => {
                     ))
                   }
                 </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          </div>
+
+          <div style={{ background: 'var(--surface-color)', padding: '1.5rem', borderRadius: 'var(--border-radius)', border: '1px solid var(--border-color)', transition: 'background-color 0.3s, border-color 0.3s' }}>
+            <h3 style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '1rem', textAlign: 'center', fontWeight: '500' }}>単語の習熟度分布（わかる回数）</h3>
+          <div style={{ width: '100%', height: 200 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={distributionData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+                <XAxis dataKey="count" tick={{fontSize: 12, fill: 'var(--text-secondary)'}} axisLine={false} tickLine={false} />
+                <YAxis tick={{fontSize: 12, fill: 'var(--text-secondary)'}} axisLine={false} tickLine={false} allowDecimals={false} />
+                <Tooltip 
+                  cursor={{fill: 'rgba(0,0,0,0.05)'}}
+                  contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'}}
+                  labelStyle={{color: 'var(--text-primary)', fontWeight: 'bold'}}
+                />
+                <Bar dataKey="words" radius={[4, 4, 0, 0]} fill="var(--success-color)" />
               </BarChart>
             </ResponsiveContainer>
           </div>
