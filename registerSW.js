@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/eitango-app/sw.js', { scope: '/eitango-app/' })})}
